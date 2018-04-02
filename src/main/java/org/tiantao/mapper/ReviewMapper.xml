@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tiantao.dao.ReviewDao">
+	<!--设置domain类和数据库中表的字段一一对应，注意数据库字段和domain类中的字段名称不致，此处一定要！ -->
+	<resultMap id="BaseResultMap" type="org.tiantao.bean.Review">
+		<id column="USER_ID" property="userId" jdbcType="INTEGER" />
+		<result column="USER_NAME" property="userName" jdbcType="CHAR" />
+		<result column="USER_PASSWORD" property="userPassword" jdbcType="CHAR" />
+		<result column="USER_EMAIL" property="userEmail" jdbcType="CHAR" />
+	</resultMap>
+	<!-- 查询单条记录 -->
+	<select id="selectUserById" parameterType="int" resultMap="BaseResultMap">
+		SELECT * FROM t_user WHERE USER_ID = #{userId}
+	</select>
+	<!-- 保存评审 -->
+	<insert id="saveReview" parameterType="org.tiantao.bean.Review">
+		<selectKey order="AFTER" keyProperty="id" resultType="int">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into review(projectName,title,master,team,week,date)
+		values(#{projectName},#{title},#{master},#{team},#{week},#{date});
+	</insert>
+	<select id="findAllReviews"  parameterType="map"  resultType="org.tiantao.bean.Review">
+		select * from review limit #{pageNum},#{pageSize};
+	</select>
+	<select id="getOneReviewById" parameterType="int" resultType="org.tiantao.bean.Review">
+		select * from review where id = #{id};
+	</select>
+	<update id="updateReview" parameterType="org.tiantao.bean.Review">
+		update review set projectName=#{projectName},title=#{title},master=#{master},
+		team=#{team},week=#{week},date=#{date} where id=#{id};
+	</update>
+	<delete id="deleteReviewById" parameterType="int">
+		delete from review where id=#{id};
+	</delete>
+	<select id="countReviews" resultType="int">
+		select count(*) from review;
+	</select>
+</mapper>  
