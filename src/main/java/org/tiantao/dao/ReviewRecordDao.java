@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.tiantao.annotation.MapperAnnotation;
 import org.tiantao.bean.ReviewRecord;
+import org.tiantao.bean.ReviewRecordVo;
 import org.tiantao.bean.User;
 
 @MapperAnnotation
@@ -45,6 +46,8 @@ public interface ReviewRecordDao {
 	 * @date 2018年3月31日 下午3:00:21
 	 */
 	List<ReviewRecord> findAllReviewRecords(Map<String, Object> map);
+
+	List<ReviewRecordVo> findAllReviewRecordVos(Map<String, Object> map);
 
 	/**
 	 * @Description: 统计

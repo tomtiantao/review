@@ -23,24 +23,27 @@
   <body>
     <div class="x-body">
          <form id ="userForm" class="layui-form" method="post">
+          <input type="hidden" id="L_reviewId" name="reviewId">
           <div class="layui-form-item">
               <label for="L_projectName" class="layui-form-label">
                   <span class="x-red">*</span>项目名称
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_projectName" name="projectName" required="" 
-                  autocomplete="off" class="layui-input">
-              </div>
+      			<select name="projectName" id="L_projectName" lay-filter="test2"> 
+      			</select>
+    		  </div>
           </div>
+          
           <div class="layui-form-item">
               <label for="L_title" class="layui-form-label">
                   <span class="x-red">*</span>主题
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_title" name="title" required="" 
-                  autocomplete="off" class="layui-input">
-              </div>
+      			<select name="title" id="L_title" lay-filter="test3">
+      			</select>
+    		  </div>
           </div>
+		  
           
            <div class="layui-form-item">
               <label for="L_problem" class="layui-form-label">
@@ -86,10 +89,14 @@
               <label for="L_status" class="layui-form-label">
                   <span class="x-red">*</span>状态
               </label>
-              <div class="layui-input-inline">
+              <div class="layui-input-block">
+                <input type="radio" name="status" lay-skin="primary" title="未修复" checked="" value="0">
+                <input type="radio" name="status" lay-skin="primary" title="已修复" value="1">
+              </div>
+              <!-- <div class="layui-input-inline">
                   <input type="text" id="L_status" name="status" required=""
                   autocomplete="off" class="layui-input">
-              </div>
+              </div> -->
           </div>
           
           <div class="layui-form-item">
@@ -101,7 +108,57 @@
           </div>
       </form>
     </div>
+    <script src="js/config.js"></script>
     <script>
+	    $(function() {
+	    	getAllProject();
+	    	
+		});
+        function getAllProject() {
+        	$.ajax({
+                url:url+"/reviewCMS/review/findAllProjectNames.do",
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+              		 var tr = $('#L_projectName').append('<option value=\"\">请选择项目</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item+">"+item+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+		}
+        function getAllTitle(projectName){
+        	$.ajax({
+                url:url+"/reviewCMS/review/findReview.do?projectName="+projectName,
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+              		 $("#L_title").empty();  
+              		 var tr = $('#L_title').append('<option value=\"\">请选择主题</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item.id+">"+item.title+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+        }
+        
+        
+        function renderForm(){
+        	  layui.use('form', function(){
+        	   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+        	   form.render();
+        	  });
+        }
+        
+        
         layui.use(['form','layer'], function(){
             $ = layui.jquery;
           var form = layui.form
@@ -121,15 +178,26 @@
                 }
             }
           });
+          
+          form.on('select(test2)', function(data){
+        	  console.log(data.elem); //得到select原始DOM对象
+        	  console.log(data.value); //得到被选中的值
+        	  getAllTitle(data.value);
+        	});
+		  form.on('select(test3)', function(data){
+        	  console.log(data.elem); //得到select原始DOM对象
+        	  console.log(data.value); //得到被选中的值
+        	  $('#L_reviewId').val(data.value);
+        	});			
+          
 
         //监听提交
           form.on('submit(add)', function(data){
         	  $.ajax({
-                  url:"http://localhost:8080/spring_mybatis_test2/review/saveReview.do",
+                  url:url+"/reviewCMS/review/saveReviewRecord.do",
                   type:"POST",
                   data: data.field,
                   success: function(data){
-                	  console.log('ajaxData:'+data);
                 	  if(data.errorcode == '200'){
                 		  layer.alert("增加成功", {icon: 6},function () {
                               // 获得frame索引
@@ -151,12 +219,7 @@
           
         });
     </script>
-    <script>var _hmt = _hmt || []; (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();</script>
+    
   </body>
 
 </html>

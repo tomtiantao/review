@@ -33,7 +33,15 @@ public interface ReviewService {
 	 * @author: tiant
 	 * @date 2018年3月31日 下午3:00:21
 	 */
-	List<Review> findAllReviews(int pageNum, int pageSize);
+	List<Review> findAllReviews(int pageNum, int pageSize, String keyword, String startDate, String endDate);
+
+	/**
+	 * @Description: 查询所有的项目名
+	 * @return: List<String>
+	 * @author: tiant
+	 * @date 2018年4月3日 下午5:37:10
+	 */
+	List<String> findAllProjectName();
 
 	/**
 	 * @Description: 统计评审条数
@@ -60,4 +68,13 @@ public interface ReviewService {
 	 * @date 2018年4月2日 上午10:53:33
 	 */
 	Review findOneReviewById(Integer id);
+
+	/**
+	 * @Description: 根据项目名称查询评审
+	 * @param projectName
+	 * @return: List<Review>
+	 * @author: tiant
+	 * @date 2018年4月3日 下午3:47:30
+	 */
+	List<Review> findReviewByProjectName(String projectName);
 }

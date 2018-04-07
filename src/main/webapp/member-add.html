@@ -56,10 +56,20 @@
               <label for="L_team" class="layui-form-label">
                   <span class="x-red">*</span>组别
               </label>
-              <div class="layui-input-inline">
+              <!-- <div class="layui-input-inline">
                   <input type="text" id="L_team" name="team" required=""
                   autocomplete="off" class="layui-input">
-              </div>
+              </div> -->
+              <div class="layui-input-inline">
+      			<select name="team" id="L_team">
+       				 <option value="">请选择组</option>
+        			 <option value="李鑫伟组" selected="">李鑫伟组</option>
+        			 <option value="陈茂锦组">陈茂锦组</option>
+        		     <option value="赵启潍组">赵启潍组</option>
+        		     <option value="李宴儒组">李宴儒组</option>
+        		     <option value="王全组">王全组</option>
+      			</select>
+    		  </div>
           </div>
           
            <div class="layui-form-item">
@@ -91,6 +101,7 @@
           </div>
       </form>
     </div>
+    <script src="js/config.js"></script> 
     <script>
         layui.use(['form','layer'], function(){
             $ = layui.jquery;
@@ -115,7 +126,7 @@
         //监听提交
           form.on('submit(add)', function(data){
         	  $.ajax({
-                  url:"http://localhost:8080/spring_mybatis_test2/review/saveReview.do",
+                  url:url+"/reviewCMS/review/saveReview.do",
                   type:"POST",
                   data: data.field,
                   success: function(data){
@@ -141,12 +152,7 @@
           
         });
     </script>
-    <script>var _hmt = _hmt || []; (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();</script>
+    
   </body>
 
 </html>

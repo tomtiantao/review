@@ -1,16 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>    
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
-<mapper namespace="org.tiantao.dao.ReviewRecordDao">  
-<!--设置domain类和数据库中表的字段一一对应，注意数据库字段和domain类中的字段名称不致，此处一定要！-->  
-    <resultMap id="BaseResultMap" type="org.tiantao.bean.ReviewRecord">  
-        <id column="USER_ID" property="userId" jdbcType="INTEGER" />  
-        <result column="USER_NAME" property="userName" jdbcType="CHAR" />  
-        <result column="USER_PASSWORD" property="userPassword" jdbcType="CHAR" />  
-        <result column="USER_EMAIL" property="userEmail" jdbcType="CHAR" />  
-    </resultMap>  
-    <!-- 查询单条记录 -->  
-    <select id="selectUserById" parameterType="int" resultMap="BaseResultMap">  
-        SELECT * FROM t_user WHERE USER_ID = #{userId}  
-    </select>  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tiantao.dao.ReviewRecordDao">
+
+	<resultMap id="BaseResultMap" type="org.tiantao.bean.ReviewRecordVo">
+		<result column="team" property="team" jdbcType="CHAR" />
+		<result column="projectName" property="projectName" jdbcType="CHAR" />
+		<result column="title" property="title" jdbcType="CHAR" />
+		<result column="problem" property="problem" jdbcType="CHAR" />
+		<result column="introducer" property="introducer" jdbcType="CHAR" />
+		<result column="modifier" property="modifier" jdbcType="CHAR" />
+		<result column="finishDate" property="finishDate" jdbcType="CHAR" />
+		<result column="status" property="status" jdbcType="CHAR" />
+	</resultMap>
+
+	<!-- 保存评审记录 -->
+	<insert id="saveReviewRecord" parameterType="org.tiantao.bean.ReviewRecord">
+		<selectKey order="AFTER" keyProperty="id" resultType="int">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into review_record(reviewId,projectName,title,problem,introducer,modifier,finishDate,status)
+		values(#{reviewId},#{projectName},#{title},#{problem},#{introducer},#{modifier},#{finishDate},#{status});
+	</insert>
+	<select id="findAllReviewRecords" parameterType="map" resultType="org.tiantao.bean.ReviewRecord">
+		select * from review_record where 1=1
+		<if test="team != null and team != ''">
+			AND team = #{team}
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND projectName = #{projectName}
+		</if>
+		<if test="title != null and title != ''">
+			AND title = #{title}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND projectName like '%${keyword}%'
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND date <![CDATA[ >= ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND date <![CDATA[ <= ]]>
+			#{endDate}
+		</if>
+		limit #{pageNum},#{pageSize};
+	</select>
+
+	<!-- 导出查询 -->
+	<select id="findAllReviewRecordVos" parameterType="map" resultMap="BaseResultMap">
+		select b.team,b.projectName,b.title,a.problem,a.introducer,
+		a.modifier,a.finishDate,a.`status` from review_record a,review b
+		where a.reviewId = b.id
+		<if test="team != null and team != ''">
+			AND b.team = #{team}
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND b.projectName = #{projectName}
+		</if>
+		<if test="title != null and title != ''">
+			AND b.title = #{title}
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND b.projectName like '%${keyword}%'
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND a.date <![CDATA[ >= ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND a.date <![CDATA[ <= ]]>
+			#{endDate}
+		</if>
+		limit #{pageNum},#{pageSize};
+	</select>
+
+	<select id="countReviewRecords" resultType="int">
+		select count(*) from review_record;
+	</select>
+	<select id="getOneReviewRecordById" parameterType="int" resultType="org.tiantao.bean.ReviewRecord">
+		select * from review_record where id = #{id};
+	</select>
+	<delete id="deleteReviewRecordById" parameterType="int">
+		delete from review_record where id=#{id};
+	</delete>
+	<update id="updateReviewRecord" parameterType="org.tiantao.bean.ReviewRecord">
+		update review_record set reviewId=#{reviewId},projectName=#{projectName},title=#{title},problem=#{problem},
+		introducer=#{introducer},modifier=#{modifier},finishDate=#{finishDate},status=#{status} where id=#{id};
+	</update>
 </mapper>  

@@ -3,6 +3,7 @@ package org.tiantao.service;
 import java.util.List;
 
 import org.tiantao.bean.ReviewRecord;
+import org.tiantao.bean.ReviewRecordVo;
 import org.tiantao.bean.User;
 
 public interface ReviewRecordService {
@@ -34,7 +35,9 @@ public interface ReviewRecordService {
 	 * @author: tiant
 	 * @date 2018年3月31日 下午3:00:21
 	 */
-	List<ReviewRecord> findAllReviewRecords(int pageNum, int pageSize);
+	List<ReviewRecord> findAllReviewRecords(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title);
+
+	List<ReviewRecordVo> findAllReviewRecordVos(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title);
 
 	/**
 	 * @Description: 统计评审条数

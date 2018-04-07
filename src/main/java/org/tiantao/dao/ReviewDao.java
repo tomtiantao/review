@@ -47,6 +47,23 @@ public interface ReviewDao {
 	List<Review> findAllReviews(Map<String, Object> map);
 
 	/**
+	 * @Description: 根据项目名称查询评审
+	 * @param projectName
+	 * @return: List<Review>
+	 * @author: tiant
+	 * @date 2018年4月3日 下午3:48:17
+	 */
+	List<Review> findReviewByProjectName(String projectName);
+
+	/**
+	 * @Description: 查询所有的项目名
+	 * @return: List<String>
+	 * @author: tiant
+	 * @date 2018年4月3日 下午5:38:02
+	 */
+	List<String> findAllProjectName();
+
+	/**
 	 * @Description: 统计
 	 * @return: int
 	 * @author: tiant

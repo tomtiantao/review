@@ -21,9 +21,32 @@
 		insert into review(projectName,title,master,team,week,date)
 		values(#{projectName},#{title},#{master},#{team},#{week},#{date});
 	</insert>
-	<select id="findAllReviews"  parameterType="map"  resultType="org.tiantao.bean.Review">
-		select * from review limit #{pageNum},#{pageSize};
+	<select id="findAllReviews" parameterType="map" resultType="org.tiantao.bean.Review">
+		select * from review where 1=1
+
+		<if test="keyword != null and keyword != ''">
+			AND projectName like '%${keyword}%'
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND date <![CDATA[ >= ]]>
+			#{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND date <![CDATA[ <= ]]>
+			#{endDate}
+		</if>
+
+		limit #{pageNum},#{pageSize}
 	</select>
+
+	<select id="findAllProjectName" resultType="string">
+		select DISTINCT projectName from review;
+	</select>
+
+	<select id="findReviewByProjectName" parameterType="string" resultType="org.tiantao.bean.Review">
+		select * from review where projectName=#{projectName};
+	</select>
+
 	<select id="getOneReviewById" parameterType="int" resultType="org.tiantao.bean.Review">
 		select * from review where id = #{id};
 	</select>

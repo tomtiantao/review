@@ -27,10 +27,13 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<Review> findAllReviews(int pageNum, int pageSize) {
+	public List<Review> findAllReviews(int pageNum, int pageSize, String keyword, String startDate, String endDate) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("pageSize", pageSize);
 		map.put("pageNum", (pageNum - 1) * pageSize);
+		map.put("keyword", keyword);
+		map.put("startDate", startDate);
+		map.put("endDate", endDate);
 		return reviewDao.findAllReviews(map);
 	}
 
@@ -52,5 +55,15 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public int countReviews() {
 		return reviewDao.countReviews();
+	}
+
+	@Override
+	public List<Review> findReviewByProjectName(String projectName) {
+		return reviewDao.findReviewByProjectName(projectName);
+	}
+
+	@Override
+	public List<String> findAllProjectName() {
+		return reviewDao.findAllProjectName();
 	}
 }

@@ -92,6 +92,7 @@
           </div>
       </form>
     </div>
+    <script src="js/config.js"></script> 
     <script>
     
     // 编辑	
@@ -102,7 +103,7 @@
     
     function getOneReview(id) {
    	 $.ajax({
-            url:"http://localhost:8080/spring_mybatis_test2/review/fingOneReview.do?id="+id,
+            url:url+"/reviewCMS/review/fingOneReview.do?id="+id,
             type:"GET",
             data: '',
             success: function(data){
@@ -153,7 +154,7 @@
         //监听提交
         form.on('submit(edit)', function(data){
       	  $.ajax({
-                url:"http://localhost:8080/spring_mybatis_test2/review/saveReview.do",
+                url:url+"/reviewCMS/review/saveReview.do",
                 type:"POST",
                 data: data.field,
                 success: function(data){
