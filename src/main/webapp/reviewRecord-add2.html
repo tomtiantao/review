@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-body">
+         <form id ="userForm" class="layui-form" method="post">
+          <input type="hidden" id="L_reviewId" name="reviewId">
+		  <div class="layui-form-item">
+			<div class="layui-inline">
+              <label for="L_projectName" class="layui-form-label">
+                  <span class="x-red">*</span>项目名称
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_projectName" name="projectName" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+			<div class="layui-inline">
+              <label for="L_team" class="layui-form-label">
+                  <span class="x-red">*</span>组别
+              </label>
+              <div class="layui-input-inline">
+      			<select name="team" id="L_team" lay-filter="test3">
+      			</select>
+    		  </div>
+			</div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+			<div class="layui-inline">
+              <label for="L_problem" class="layui-form-label">
+                  <span class="x-red">*</span>问题
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_problem" name="problem" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+			<div class="layui-inline">
+              <label for="L_className" class="layui-form-label">
+                  <span class="x-red">*</span>类名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_className" name="className" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          </div>
+          
+           
+		  
+		  <div class="layui-form-item">
+			<div class="layui-inline">
+			  <label for="L_line" class="layui-form-label">
+                  <span class="x-red">*</span>行数
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_line" name="line" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+			
+			<div class="layui-inline">
+              <label for="L_introducer" class="layui-form-label">
+                  <span class="x-red">*</span>提出人
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_introducer" name="introducer" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+              
+          </div>
+          
+           <div class="layui-form-item">
+		    <div class="layui-inline">
+              <label for="L_modifier" class="layui-form-label">
+                  <span class="x-red">*</span>修改人
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_modifier" name="modifier" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+			<div class="layui-inline">
+              <label for="L_createDate" class="layui-form-label">
+                  <span class="x-red">*</span>提出时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_createDate" name="createDate" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+		   </div>
+          
+          <div class="layui-form-item">
+			<div class="layui-inline">
+              <label for="L_endDate" class="layui-form-label">
+                  <span class="x-red">*</span>截止时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_endDate" name="endDate" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+		  
+			<div class="layui-inline">
+              <label for="L_finishDate" class="layui-form-label">
+                  <span class="x-red">*</span>完成时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_finishDate" name="finishDate" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+			
+			<div class="layui-inline">
+			  <label for="L_week" class="layui-form-label">
+				  <span class="x-red">*</span>周次
+			  </label>
+			  <div class="layui-input-inline">
+				<input type="text" id="L_week" name="week" required=""
+				  autocomplete="off" class="layui-input">
+			  </div>
+			</div>
+			
+			<div class="layui-inline">
+              <label for="L_status" class="layui-form-label">
+                  <span class="x-red">*</span>状态
+              </label>
+              <div class="layui-input-block">
+                <input type="radio" name="status" lay-skin="primary" title="未修复" checked="" value="0">
+                <input type="radio" name="status" lay-skin="primary" title="已修复" value="1">
+              </div>  
+            </div>
+			
+          </div>
+                  
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+              </label>
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  增加
+              </button>
+          </div>
+      </form>
+    </div>
+    <script src="js/config.js"></script>
+    <script>
+	    $(function() {
+	    	getAllProject();
+	    	
+		});
+        function getAllProject() {
+        	$.ajax({
+                url:url+"/reviewCMS/review/findAllProjectNames.do",
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+              		 var tr = $('#L_projectName').append('<option value=\"\">请选择项目</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item+">"+item+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+		}
+        function getAllTitle(projectName){
+        	$.ajax({
+                url:url+"/reviewCMS/review/findReview.do?projectName="+projectName,
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+              		 $("#L_title").empty();  
+              		 var tr = $('#L_title').append('<option value=\"\">请选择主题</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item.id+">"+item.title+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+        }
+        
+        
+        function renderForm(){
+        	  layui.use('form', function(){
+        	   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+        	   form.render();
+        	  });
+        }
+        
+        
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+        
+          //自定义验证规则
+          form.verify({
+            nikename: function(value){
+              if(value.length < 5){
+                return '昵称至少得5个字符啊';
+              }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+          });
+          
+          form.on('select(test2)', function(data){
+        	  console.log(data.elem); //得到select原始DOM对象
+        	  console.log(data.value); //得到被选中的值
+        	  getAllTitle(data.value);
+        	});
+		  form.on('select(test3)', function(data){
+        	  console.log(data.elem); //得到select原始DOM对象
+        	  console.log(data.value); //得到被选中的值
+        	  $('#L_reviewId').val(data.value);
+        	});			
+          
+
+        //监听提交
+          form.on('submit(add)', function(data){
+        	  $.ajax({
+                  url:url+"/reviewCMS/review/saveReviewRecord.do",
+                  type:"POST",
+                  data: data.field,
+                  success: function(data){
+                	  if(data.errorcode == '200'){
+                		  layer.alert("增加成功", {icon: 6},function () {
+                              // 获得frame索引
+                              var index = parent.layer.getFrameIndex(window.name);
+                              //关闭当前frame
+                              parent.layer.close(index);
+                              parent.location.reload();
+                          });
+                	  }
+                	  //layer.msg('添加成功!'); 
+                	  //发异步，把数据提交给php
+                      
+                  }
+              });
+            console.log('data:'+data);
+            return false;
+          });
+          
+          
+        });
+    </script>
+    
+  </body>
+
+</html>

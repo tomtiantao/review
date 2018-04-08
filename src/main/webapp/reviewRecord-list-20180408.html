@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>云平台部代码评审运维系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">评审管理</a>
+        <a>
+          <cite>评审列表</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">&#x1002;</i></a>
+    </div>
+    <div class="x-body">
+	
+      <div class="demoTable">
+	  
+		
+	  
+		<div class="layui-input-inline">
+			<div class="layui-input-inline" >
+				<select name="team" style="height:38px" id="L_team">
+					<option value="">请选择组别</option>
+					<option value="李鑫伟组">李鑫伟组</option>
+					<option value="陈茂锦组">陈茂锦组</option>
+					<option value="赵启潍组">赵启潍组</option>
+					<option value="李宴儒组">李宴儒组</option>
+					<option value="王全组">王全组</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="layui-input-inline">
+			<div class="layui-input-inline" >
+				<select name="projectName" style="height:38px" id="L_projectName" lay-filter="test2">
+					<option value="">请选择项目名</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="layui-input-inline">
+			<div class="layui-input-inline" >
+				<select name="title" style="height:38px" id="L_title">
+					<option value="">请选择主题</option>
+				</select>
+			</div>
+		</div>
+		
+		
+	  
+		<div class="layui-input-inline">
+			<input type="text" name="start" id="start" lay-verify="date" placeholder="开始时间" autocomplete="off" class="layui-input">
+		</div>
+		<div class="layui-input-inline"> 
+			<input type="text" name="end" id="end" lay-verify="date" placeholder="结束时间" autocomplete="off" class="layui-input">
+		</div>
+		<div class="layui-input-inline"> 
+			<input class="layui-input" placeholder="请输入关键字" name="keyword" id="demoReload" autocomplete="off">
+		</div>	
+		<button class="layui-btn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+		<!--
+		<div class="layui-input-inline"> 
+			<button class="layui-btn layui-btn-normal"><i class="layui-icon">&#xe601;</i>一键导出</button>
+		</div>
+		-->
+		</div>
+      <xblock>
+		
+        <button class="layui-btn layui-btn-warm" onclick="delAll()"><i class="layui-icon"></i>删除</button>
+		
+        <button class="layui-btn layui-btn-danger" onclick="x_admin_show('添加用户','./reviewRecord-add.html',500,500)"><i class="layui-icon"></i>添加</button>
+		
+		<button class="layui-btn layui-btn-normal" onclick="exportReviewRecord()"><i class="layui-icon">&#xe601;</i>下载</button>
+		
+		<button class="layui-btn" onclick=""><i class="layui-icon">&#xe609;</i>通知</button>
+		
+        <span class="x-right" style="line-height:40px">
+		
+		</span>
+      </xblock>
+	  <table class="layui-hide" id="LAY_table_user" lay-filter="useruv"></table>
+	  <script type="text/html" id="barDemo">
+		<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+	  </script>
+      
+
+    </div>
+    <script src="js/config.js"></script> 
+    <script>
+    //启动加载
+	$(function() {
+	    	getAllProject();
+	    	
+		});
+        function getAllProject() {
+        	$.ajax({
+                url:url+"/reviewCMS/review/findAllProjectNames.do",
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+					 $("#L_projectName").empty();
+              		 var tr = $('#L_projectName').append('<option value=\"\">请选择项目</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item+">"+item+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+		}
+        function getAllTitle(projectName){
+        	$.ajax({
+                url:url+"/reviewCMS/review/findReview.do?projectName="+projectName,
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+              		 $("#L_title").empty();  
+              		 var tr = $('#L_title').append('<option value=\"\">请选择主题</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item.title+">"+item.title+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+        }
+        // 导出
+		function exportReviewRecord() {
+		    var keyword = $('#demoReload').val();
+			var endDate = $('#end').val();
+			var startDate = $('#start').val();
+			var title = $("#L_title").children('option:selected').val();
+			var projectName = $("#L_projectName").children('option:selected').val();
+			window.location.href=url+"/reviewCMS/review/exportReviewRecord.do?keyword="+keyword+"&endDate="+endDate+"&startDate="+startDate+"&title="+title+"&projectName="+projectName;
+		}
+        
+        function renderForm(){
+        	  layui.use('form', function(){
+        	   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+        	   form.render();
+        	  });
+        }
+	
+		$("#L_projectName").change(function () {  
+            var ss = $(this).children('option:selected').val();  
+			getAllTitle(ss);
+        });  
+	
+	
+	
+    layui.use('table', function(){
+    var table = layui.table;
+
+    //方法级渲染
+    table.render({
+        elem: '#LAY_table_user'
+        ,url: url+'/reviewCMS/review/listReviewRecord.do'
+        ,cols: [[
+            {checkbox: true,width:'5%'}
+            ,{field:'id', title: 'ID', align:'center',width:'5%', sort: true}
+            ,{field:'projectName', title: '项目名称',align:'center', width:'10%'}
+            ,{field:'title', title: '主题',align:'center', width:'10%'}
+            ,{field:'problem', title: '问题', align:'center',width:'20%'}
+            ,{field:'introducer', title: '提出人', align:'center',width:'10%'}
+			,{field:'modifier', title: '修改人', align:'center',width:'10%'}
+			,{field:'finishDate', title: '完成时间',align:'center', width:'10%',sort: true}
+			,{field:'status', title: '状态',align:'center', width:'10%',
+			templet: function(d){
+				var update = '<span style="color: #0f0;">已修复</span>';
+				if(d.status == 0){
+					update = '<span style="color: #f00;">未修复</span>';
+				}
+				return update;
+				}
+			}
+			,{field:'right', title: '操作', align:'center',width:'10%',toolbar:"#barDemo"}
+        ]]
+        ,id: 'testReload'
+		,page:true
+        ,limit:10
+    });
+	
+	  //监听工具条
+	table.on('tool(useruv)', function(obj){
+		var data = obj.data;
+		if(obj.event === 'detail'){
+			layer.msg('ID：'+ data.id + ' 的查看操作');
+		} else if(obj.event === 'del'){
+			layer.confirm('确定要删除吗？', function(index){
+				console.log(data);
+				$.ajax({
+					url: url+"/reviewCMS/review/deleteReviewRecord.do",
+					type: "GET",
+					data:{"id":data.id},
+					dataType: "json",
+					success: function(data){
+
+						if(data.errorcode == '200'){
+						   //删除这一行
+							obj.del();
+						   //关闭弹框
+							layer.close(index);
+							layer.msg("删除成功", {icon:6,time:1000});
+						}else{
+							layer.msg("删除失败", {icon:5,time:1000});
+						}
+					}
+
+				});
+			});
+		} else if(obj.event === 'edit'){
+			x_admin_show('编辑','reviewRecord-edit.html?id='+data.id+'',500,500);
+
+		}
+	});
+	
+	var $ = layui.$, active = {
+        reload: function(){
+            var demoReload = $('#demoReload');
+			var endDate = $('#end');
+			var startDate = $('#start');
+			var title = $("#L_title").children('option:selected');
+			var projectName = $("#L_projectName").children('option:selected');
+            table.reload('testReload', {
+                where: {
+                    keyword: demoReload.val(),
+					startDate: startDate.val(),
+					endDate: endDate.val(),
+					title: title.val(),
+					projectName: projectName.val()
+                }
+            });
+        }
+    };
+  
+  $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+
+
+	});
+
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+	  
+
+     
+    </script>
+   
+  </body>
+
+</html>
