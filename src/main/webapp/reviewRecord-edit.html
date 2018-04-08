@@ -39,10 +39,8 @@
                   <span class="x-red">*</span>组别
               </label>
               <div class="layui-input-inline">
-      			<select name="team" id="L_team" lay-filter="test3">
-					<option value="李鑫伟组">李鑫伟组</option>
-					<option value="陈茂锦组">陈茂锦组</option>
-					<option value="赵启潍组">赵启潍组</option>
+      			<select name="team" id="L_team" lay-filter="team">
+					
       			</select>
     		  </div>
 			</div>
@@ -87,9 +85,7 @@
               </label>
               <div class="layui-input-inline">
       			<select name="introducer" id="L_introducer" lay-filter="introducer">
-					<option value="张三">张三</option>
-					<option value="李四">李四</option>
-					<option value="王五">王五</option>
+					
       			</select>
     		  </div>
             </div>
@@ -104,9 +100,7 @@
               </label>
               <div class="layui-input-inline">
       			<select name="modifier" id="L_modifier" lay-filter="modifier">
-					<option value="张三">张三</option>
-					<option value="李四">李四</option>
-					<option value="王五">王五</option>
+					
       			</select>
     		  </div>
 			</div>
@@ -160,7 +154,7 @@
     // 编辑	
     $(function() {
     	//项目名渲染
-    	getAllProject();
+    	getAllTeam();
     	var id = getUrlParam('id');
     	// 主题渲染
     	$.ajax({
@@ -171,49 +165,56 @@
             success: function(data){
           	  if(data.errorcode == '200'){
           		 var list = data.data;
-          		 getAllTitle(list.projectName);
+          		 getAllPerson(list.team);
           	  }
             }
         });
     	getOneReview(id);
 	});
     
-    function getAllProject() {
-    	$.ajax({
-            url:url+"/reviewCMS/review/findAllProjectNames.do",
-            type:"GET",
-            data: '',
-            success: function(data){
-          	  if(data.errorcode == '200'){
-          		 var list = data.data;
-          		 var tr = $('#L_projectName').append('<option value=\"\">请选择项目</option>');
-           		 $.each(list,function(i,item){
-           			tr.append("<option value="+item+">"+item+"</option>");
-           		 });
-          		renderForm(); 
-          	  }
-            }
-        });
-	}
-    
-    function getAllTitle(projectName){
-    	$.ajax({
-            url:url+"/reviewCMS/review/findReview.do?projectName="+projectName,
-            type:"GET",
-            data: '',
-            success: function(data){
-          	  if(data.errorcode == '200'){
-          		 var list = data.data;
-          		 $("#L_title").empty();  
-          		 var tr = $('#L_title').append('<option value=\"\">请选择主题</option>');
-           		 $.each(list,function(i,item){
-           			tr.append("<option value="+item.id+">"+item.title+"</option>");
-           		 });
-          		renderForm(); 
-          	  }
-            }
-        });
-    }
+    function getAllTeam() {
+        	$.ajax({
+                url:url+"/reviewCMS/team/listTeam.do?page=1&limit=100",
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.code == 0){
+              		 var list = data.data;
+					  $("#L_team").empty();
+              		 var tr = $('#L_team').append('<option value=\"\">请选择项目</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item.team+">"+item.team+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+		}
+		
+		function getAllPerson(team) {
+        	$.ajax({
+                url:url+"/reviewCMS/person/findPersonByTeam.do?team="+team,
+                type:"GET",
+                data: '',
+                success: function(data){
+              	  if(data.errorcode == '200'){
+              		 var list = data.data;
+					$("#L_introducer").empty();
+              		 var tr = $('#L_introducer').append('<option value=\"\">请选择人</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item.name+">"+item.name+"</option>");
+               		 });
+					 
+					 $("#L_modifier").empty();
+              		 var tr = $('#L_modifier').append('<option value=\"\">请选择人</option>');
+               		 $.each(list,function(i,item){
+               			tr.append("<option value="+item.name+">"+item.name+"</option>");
+               		 });
+              		renderForm(); 
+              	  }
+                }
+            });
+		}
     
     function getOneReview(id) {
    	 $.ajax({
@@ -292,11 +293,11 @@
              elem: '#L_finishDate' //指定元素
           });
         
-        form.on('select(test2)', function(data){
-      	  console.log(data.elem); //得到select原始DOM对象
-      	  console.log(data.value); //得到被选中的值
-      	  getAllTitle(data.value);
-      	});    
+        form.on('select(team)', function(data){
+        	  console.log(data.elem); //得到select原始DOM对象
+        	  console.log(data.value); //得到被选中的值
+        	  getAllPerson(data.value);
+        });  
 
         //监听提交
         form.on('submit(edit)', function(data){
