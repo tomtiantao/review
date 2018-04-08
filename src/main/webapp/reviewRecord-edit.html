@@ -24,81 +24,127 @@
     <div class="x-body">
          <form id ="userForm" class="layui-form" method="post">
           <input type="hidden" id="L_id" name="id">
-		  <input type="hidden" id="L_reviewId" name="reviewId">
-          <div class="layui-form-item">
+		  <div class="layui-form-item">
+			<div class="layui-inline">
               <label for="L_projectName" class="layui-form-label">
                   <span class="x-red">*</span>项目名称
               </label>
               <div class="layui-input-inline">
-      			<select name="projectName" id="L_projectName" lay-filter="test2"> 
-      			</select>
-    		  </div>
-          </div>
-          
-          <div class="layui-form-item">
-              <label for="L_title" class="layui-form-label">
-                  <span class="x-red">*</span>主题
+                  <input type="text" id="L_projectName" name="projectName" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+			<div class="layui-inline">
+              <label for="L_team" class="layui-form-label">
+                  <span class="x-red">*</span>组别
               </label>
               <div class="layui-input-inline">
-      			<select name="title" id="L_title" >
+      			<select name="team" id="L_team" lay-filter="test3">
+					<option value="李鑫伟组">李鑫伟组</option>
+					<option value="陈茂锦组">陈茂锦组</option>
+					<option value="赵启潍组">赵启潍组</option>
       			</select>
     		  </div>
-          </div>
-          
-           <div class="layui-form-item">
+			</div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+			<div class="layui-inline">
               <label for="L_problem" class="layui-form-label">
                   <span class="x-red">*</span>问题
               </label>
-              <div class="layui-input-inline">
+             <div class="layui-input-inline">
                   <input type="text" id="L_problem" name="problem" required=""
                   autocomplete="off" class="layui-input">
               </div>
+			</div>
+			
+			<div class="layui-inline">
+              <label for="L_className" class="layui-form-label">
+                  <span class="x-red">*</span>类名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_className" name="className" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+            </div>		
           </div>
+     
           
            <div class="layui-form-item">
+		    <div class="layui-inline">
+			  <label for="L_line" class="layui-form-label">
+                  <span class="x-red">*</span>行数
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_line" name="line" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+			</div>
+		    <div class="layui-inline">
               <label for="L_introducer" class="layui-form-label">
                   <span class="x-red">*</span>提出人
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_introducer" name="introducer" required=""
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
+      			<select name="introducer" id="L_introducer" lay-filter="introducer">
+					<option value="张三">张三</option>
+					<option value="李四">李四</option>
+					<option value="王五">王五</option>
+      			</select>
+    		  </div>
+            </div>
+		    
+			
+		   </div>
           
-           <div class="layui-form-item">
+          <div class="layui-form-item">
+		    <div class="layui-inline">
               <label for="L_modifier" class="layui-form-label">
                   <span class="x-red">*</span>修改人
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_modifier" name="modifier" required=""
-                  autocomplete="off" class="layui-input">
-              </div>
-          </div>
-          
-          <div class="layui-form-item">
-              <label for="L_finishDate" class="layui-form-label">
-                  <span class="x-red">*</span>完成日期
+      			<select name="modifier" id="L_modifier" lay-filter="modifier">
+					<option value="张三">张三</option>
+					<option value="李四">李四</option>
+					<option value="王五">王五</option>
+      			</select>
+    		  </div>
+			</div>
+			<div class="layui-inline">
+              <label for="L_createDate" class="layui-form-label">
+                  <span class="x-red">*</span>提出时间
               </label>
               <div class="layui-input-inline">
-                  <input type="text" id="L_finishDate" name="finishDate" required=""
-                  autocomplete="off" class="layui-input">
+                  <input type="text" name="createDate" id="L_createDate" lay-verify="date" placeholder="提出时间" autocomplete="off" class="layui-input">
               </div>
-          </div>
-          
-           <div class="layui-form-item">
+			</div>
+		  </div>
+		  
+		  <div class="layui-form-item">
+			
+			<div class="layui-inline">
+              <label for="L_endDate" class="layui-form-label">
+                  <span class="x-red">*</span>截止时间
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" name="endDate" id="L_endDate" lay-verify="date" placeholder="截止时间" autocomplete="off" class="layui-input">
+              </div>
+			</div>
+			
+			<div class="layui-inline">
               <label for="L_status" class="layui-form-label">
                   <span class="x-red">*</span>状态
               </label>
-              <div class="layui-input-block">
-                <input type="radio" name="status" lay-skin="primary" title="未修复" checked="" value="0">
-                <input type="radio" name="status" lay-skin="primary" title="已修复" value="1">
-              </div>
-              <!-- <div class="layui-input-inline">
-                  <input type="text" id="L_status" name="status" required=""
-                  autocomplete="off" class="layui-input">
-              </div> -->
+              <div class="layui-input-inline">
+      			<select name="status" id="L_status" lay-filter="test3">
+					<option value="0">未修复</option>
+					<option value="1">已修复</option>
+      			</select>
+    		  </div> 
+            </div>
+			
           </div>
-          
+                  
           <div class="layui-form-item">
               <label for="L_repass" class="layui-form-label">
               </label>
@@ -161,7 +207,7 @@
           		 $("#L_title").empty();  
           		 var tr = $('#L_title').append('<option value=\"\">请选择主题</option>');
            		 $.each(list,function(i,item){
-           			tr.append("<option value="+item.title+">"+item.title+"</option>");
+           			tr.append("<option value="+item.id+">"+item.title+"</option>");
            		 });
           		renderForm(); 
           	  }
@@ -178,14 +224,17 @@
           	  if(data.errorcode == '200'){
           		 var list = data.data;
           		 $('#L_id').val(list.id);
-          		 $('#L_projectName').val(list.projectName);
-          		 //getAllTitle(list.projectName);
-          		 $('#L_title').val(list.title);
+				 $('#L_projectName').val(list.projectName);
+          		 $('#L_team').val(list.team);
           		 $('#L_problem').val(list.problem);
+          		 $('#L_className').val(list.className);
+          		 $('#L_line').val(list.line);
           		 $('#L_introducer').val(list.introducer);
           		 $('#L_modifier').val(list.modifier);
-          		 $('#L_finishDate').val(list.finishDate);
-          		 $("input:radio[name=status][value="+list.status+"]").attr("checked",true);
+				 $('#L_createDate').val(list.createDate);
+				 $('#L_endDate').val(list.endDate);
+				 $('#L_status').val(list.status);
+          		 //$("input:radio[name=status][value="+list.status+"]").attr("checked",true);
           		//$('#L_status').val();
           		renderForm();
           	  }
@@ -194,9 +243,24 @@
 	}
     
     function renderForm(){
-  	  layui.use('form', function(){
+  	  layui.use(['form','laydate'], function(){
   	   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
   	   form.render();
+	   var laydate = layui.laydate;
+        
+			//执行一个laydate实例
+		  laydate.render({
+              elem: '#L_createDate' //指定元素
+          });
+
+			//执行一个laydate实例
+          laydate.render({
+             elem: '#L_endDate' //指定元素
+          });
+		  
+		  laydate.render({
+             elem: '#L_finishDate' //指定元素
+          });
   	  });
  	 }
     
@@ -207,25 +271,26 @@
         if (r != null) return unescape(r[2]); return null; //返回参数值
     }
     
-      layui.use(['form','layer'], function(){
+      layui.use(['form','layer','laydate'], function(){
           $ = layui.jquery;
         var form = layui.form
         ,layer = layui.layer;
       
-        //自定义验证规则
-        form.verify({
-          nikename: function(value){
-            if(value.length < 5){
-              return '昵称至少得5个字符啊';
-            }
-          }
-          ,pass: [/(.+){6,12}$/, '密码必须6到12位']
-          ,repass: function(value){
-              if($('#L_pass').val()!=$('#L_repass').val()){
-                  return '两次密码不一致';
-              }
-          }
-        });
+        var laydate = layui.laydate;
+        
+			//执行一个laydate实例
+		  laydate.render({
+              elem: '#L_createDate' //指定元素
+          });
+
+			//执行一个laydate实例
+          laydate.render({
+             elem: '#L_endDate' //指定元素
+          });
+		  
+		  laydate.render({
+             elem: '#L_finishDate' //指定元素
+          });
         
         form.on('select(test2)', function(data){
       	  console.log(data.elem); //得到select原始DOM对象

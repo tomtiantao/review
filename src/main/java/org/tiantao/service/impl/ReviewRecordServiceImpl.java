@@ -1,21 +1,31 @@
 package org.tiantao.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.tiantao.bean.ReviewRecord;
 import org.tiantao.bean.ReviewRecordVo;
 import org.tiantao.bean.User;
+import org.tiantao.dao.ReviewDao;
 import org.tiantao.dao.ReviewRecordDao;
 import org.tiantao.service.ReviewRecordService;
 
 @Service
 public class ReviewRecordServiceImpl implements ReviewRecordService {
+	private static final Logger logger = Logger.getLogger(ReviewRecordServiceImpl.class);
 	@Autowired
 	private ReviewRecordDao reviewRecordDao;
+	@Autowired
+	private ReviewDao reviewDao;
 
 	@Override
 	public User selectUserById(Integer userId) {
@@ -23,8 +33,32 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 	}
 
 	@Override
-	public void saveReviewRecord(ReviewRecord review) {
-		reviewRecordDao.saveReviewRecord(review);
+	public void saveReviewRecord(ReviewRecord reviewRecord) {
+		// 计算周次
+		if (reviewRecord != null) {
+			if (!StringUtils.isEmpty(reviewRecord.getCreateDate())) {
+				reviewRecord.setWeek(this.getWeek(reviewRecord.getCreateDate()));
+			}
+			reviewRecordDao.saveReviewRecord(reviewRecord);
+		}
+	}
+
+	private String getWeek(String str) {
+		if (!StringUtils.isEmpty(str)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Date date;
+			try {
+				date = sdf.parse(str);
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(date);
+				// 第几周
+				int week = calendar.get(Calendar.WEEK_OF_YEAR);
+				return "" + week;
+			} catch (ParseException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		return "";
 	}
 
 	@Override
@@ -61,8 +95,14 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 	}
 
 	@Override
-	public void updateReviewRecord(ReviewRecord review) {
-		reviewRecordDao.updateReviewRecord(review);
+	public void updateReviewRecord(ReviewRecord reviewRecord) {
+		// 计算周次
+		if (reviewRecord != null) {
+			if (!StringUtils.isEmpty(reviewRecord.getCreateDate())) {
+				reviewRecord.setWeek(this.getWeek(reviewRecord.getCreateDate()));
+			}
+			reviewRecordDao.updateReviewRecord(reviewRecord);
+		}
 	}
 
 	@Override

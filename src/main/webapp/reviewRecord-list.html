@@ -86,26 +86,32 @@
 		</div>
       <xblock>
 		
-        <button class="layui-btn layui-btn-warm" onclick="delAll()"><i class="layui-icon"></i>删除</button>
+        <button class="layui-btn layui-btn-warm" data-type="getCheckData" id="deleteAll"><i class="layui-icon"></i>删除</button>
 		
-        <button class="layui-btn layui-btn-danger" onclick="x_admin_show('添加用户','./reviewRecord-add.html',500,500)"><i class="layui-icon"></i>添加</button>
+        <button class="layui-btn layui-btn-danger" onclick="x_admin_show('添加用户','./reviewRecord-add.html',800,450)"><i class="layui-icon"></i>添加</button>
 		
 		<button class="layui-btn layui-btn-normal" onclick="exportReviewRecord()"><i class="layui-icon">&#xe601;</i>下载</button>
+		
+		<button class="layui-btn" onclick=""><i class="layui-icon">&#xe609;</i>通知</button>
+		
+		<button class="layui-btn layui-btn-danger" data-type="copyData" id="copyReviewRecord"><i class="layui-icon">&#xe627;</i>复制行</button>
 		
         <span class="x-right" style="line-height:40px">
 		
 		</span>
       </xblock>
-	  <table class="layui-hide" id="LAY_table_user" lay-filter="useruv"></table>
+	  <table class="layui-hide" id="LAY_table_user" lay-data="{id: 'testReload'}" lay-filter="useruv"></table>
 	  <script type="text/html" id="barDemo">
+		<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">详情</a>
 		<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+		<!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
 	  </script>
       
 
     </div>
     <script src="js/config.js"></script> 
     <script>
+	var idList="";
     //启动加载
 	$(function() {
 	    	getAllProject();
@@ -149,8 +155,12 @@
         }
         // 导出
 		function exportReviewRecord() {
-		window.location.href=url+"/reviewCMS/review/exportReviewRecord.do";
-        	
+		    var keyword = $('#demoReload').val();
+			var endDate = $('#end').val();
+			var startDate = $('#start').val();
+			var title = $("#L_title").children('option:selected').val();
+			var projectName = $("#L_projectName").children('option:selected').val();
+			window.location.href=url+"/reviewCMS/review/exportReviewRecord.do?keyword="+keyword+"&endDate="+endDate+"&startDate="+startDate+"&title="+title+"&projectName="+projectName;
 		}
         
         function renderForm(){
@@ -175,15 +185,15 @@
         elem: '#LAY_table_user'
         ,url: url+'/reviewCMS/review/listReviewRecord.do'
         ,cols: [[
-            {checkbox: true, fixed: true}
-            ,{field:'id', title: 'ID', align:'center',width:70, sort: true}
-            ,{field:'projectName', title: '项目名称',align:'center', width:160}
-            ,{field:'title', title: '主题',align:'center', width:120}
-            ,{field:'problem', title: '问题', align:'center',width:180}
-            ,{field:'introducer', title: '提出人', align:'center',width:80}
-			,{field:'modifier', title: '修改人', align:'center',width:80}
-			,{field:'finishDate', title: '完成时间',align:'center', width:120,sort: true}
-			,{field:'status', title: '状态',align:'center', width:80,
+            {checkbox: true,fixed: true}
+            ,{field:'id', title: 'ID', align:'center',width:'5%', sort: true}
+			,{field:'team', title: '小组',align:'center', width:'10%'}
+            ,{field:'projectName', title: '项目名称',align:'center', width:'10%'}
+            ,{field:'problem', title: '问题', align:'center',width:'20%'}
+            ,{field:'introducer', title: '提出人', align:'center',width:'10%'}
+			,{field:'modifier', title: '修改人', align:'center',width:'10%'}
+			,{field:'createDate', title: '提出时间',align:'center', width:'10%',sort: true}
+			,{field:'status', title: '状态',align:'center', width:'10%',
 			templet: function(d){
 				var update = '<span style="color: #0f0;">已修复</span>';
 				if(d.status == 0){
@@ -192,12 +202,29 @@
 				return update;
 				}
 			}
-			,{field:'right', title: '操作', align:'center',width:155,toolbar:"#barDemo"}
+			,{field:'right', title: '操作', align:'center',width:'15%',toolbar:"#barDemo"}
         ]]
         ,id: 'testReload'
 		,page:true
         ,limit:10
     });
+	
+	//监听表格复选框选择
+	/*
+  table.on('checkbox(useruv)', function(obj){
+    idList = "";
+    var checkStatus = table.checkStatus('testReload');
+	console.log('当前选中 '+checkStatus.data.length+' 行');
+	if(checkStatus.data.length > 0){
+		idList += checkStatus.data[0].id;
+	}
+	for(var i=1;i<checkStatus.data.length;i++){
+		idList+=','+checkStatus.data[i].id;
+	}
+	console.log('选中：'+idList);
+  });
+	*/
+	
 	
 	  //监听工具条
 	table.on('tool(useruv)', function(obj){
@@ -228,7 +255,7 @@
 				});
 			});
 		} else if(obj.event === 'edit'){
-			x_admin_show('编辑','reviewRecord-edit.html?id='+data.id+'',500,500);
+			x_admin_show('编辑','reviewRecord-edit.html?id='+data.id+'',800,450);
 
 		}
 	});
@@ -249,10 +276,78 @@
 					projectName: projectName.val()
                 }
             });
-        }
+        },
+		getCheckData: function(){ //获取选中数据
+			idList = "";
+			var checkStatus = table.checkStatus('testReload');
+			console.log('当前选中 '+checkStatus.data.length+' 行');
+			if(checkStatus.data.length > 0){
+				idList += checkStatus.data[0].id;
+			}
+			for(var i=1;i<checkStatus.data.length;i++){
+				idList+=','+checkStatus.data[i].id;
+			}
+			console.log('选中：'+idList);
+			layer.confirm('确认要删除'+checkStatus.data.length+'条数据吗？',function(index){
+              //发异步删除数据
+              $.ajax({
+              url:url+"/reviewCMS/review/deleteReviewRecord.do?ids="+idList,
+              type:"GET",
+              data: '',
+              success: function(data){
+            	  if(data.errorcode == '200'){
+					  layer.close(index);
+					  table.reload('testReload', {
+					});
+            	  }
+              }
+			});
+          });
+		  
+		},
+		copyData: function(){ //复制行
+			idList = "";
+			var checkStatus = table.checkStatus('testReload');
+			console.log('当前选中 '+checkStatus.data.length+' 行');
+			if(checkStatus.data.length > 0){
+				idList += checkStatus.data[0].id;
+			}
+			for(var i=1;i<checkStatus.data.length;i++){
+				idList+=','+checkStatus.data[i].id;
+			}
+			console.log('选中：'+idList);
+			layer.confirm('确认要复制'+checkStatus.data.length+'条数据吗？',function(index){
+              //发异步删除数据
+              $.ajax({
+              url:url+"/reviewCMS/review/copyReviewRecord.do?ids="+idList,
+              type:"GET",
+              data: '',
+              success: function(data){
+            	  if(data.errorcode == '200'){
+					  layer.close(index);
+					  table.reload('testReload', {
+					});
+            	  }
+              }
+			});
+          });
+		  
+		}
     };
+	
+	
   
   $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+  
+  $('#deleteAll').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+  
+  $('#copyReviewRecord').on('click', function(){
     var type = $(this).data('type');
     active[type] ? active[type].call(this) : '';
   });
@@ -273,7 +368,26 @@
           elem: '#end' //指定元素
         });
       });
-	  
+	 
+	function delAll () {
+
+       layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              $.ajax({
+              url:url+"/reviewCMS/review/deleteReviewRecord.do?ids="+idList,
+              type:"GET",
+              data: '',
+              success: function(data){
+            	  if(data.errorcode == '200'){
+            		  //layer.msg('已删除!',{icon:1,time:2000});
+            		  window.location.reload();
+            	  }
+              }
+          });
+              //$(obj).parents("tr").remove();
+              
+          });
+      }
 
      
     </script>

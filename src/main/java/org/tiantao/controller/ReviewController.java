@@ -151,8 +151,34 @@ public class ReviewController {
 
 	@RequestMapping(value = "/deleteReviewRecord.do", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> deleteReviewRecord(Integer id) {
-		reviewRecordService.deleteReviewRecordById(id);
+	public Map<String, Object> deleteReviewRecord(String ids) {
+		logger.info("ids:" + ids);
+		if (!StringUtils.isNullOrEmpty(ids)) {
+			String[] is = ids.split(",");
+			for (String id : is) {
+				reviewRecordService.deleteReviewRecordById(Integer.parseInt(id));
+			}
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("errorcode", "200");
+		map.put("msg", "success");
+		return map;
+	}
+
+	@RequestMapping(value = "/copyReviewRecord.do", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> copyReviewRecord(String ids) {
+		logger.info("ids:" + ids);
+		if (!StringUtils.isNullOrEmpty(ids)) {
+			String[] is = ids.split(",");
+			for (String id : is) {
+				ReviewRecord reviewRecord = reviewRecordService.findOneReviewRecordById(Integer.parseInt(id));
+				if (reviewRecord != null) {
+					reviewRecord.setId(null);
+					reviewRecordService.saveReviewRecord(reviewRecord);
+				}
+			}
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("errorcode", "200");
 		map.put("msg", "success");
@@ -223,7 +249,7 @@ public class ReviewController {
 		FileInputStream inputStream = null;
 		try {
 			String path = ReviewController.class.getClassLoader().getResource("").getPath() + File.separator;
-			String fileName = "订单记录-" + System.currentTimeMillis() + ".xls";
+			String fileName = "评审记录-" + System.currentTimeMillis() + ".xls";
 			fout = new FileOutputStream(path + fileName);
 			wb.write(fout);
 			fout.close();
@@ -339,7 +365,11 @@ public class ReviewController {
 			row.createCell(cindex++).setCellValue(record.getIntroducer());
 			row.createCell(cindex++).setCellValue(record.getModifier());
 			row.createCell(cindex++).setCellValue(record.getFinishDate());
-			row.createCell(cindex++).setCellValue(record.getStatus());
+			String status = "未修复";
+			if ("1".equals(record.getStatus())) {
+				status = "已修复";
+			}
+			row.createCell(cindex++).setCellValue(status);
 		}
 		return wb;
 	}

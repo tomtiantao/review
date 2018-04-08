@@ -19,8 +19,8 @@
 		<selectKey order="AFTER" keyProperty="id" resultType="int">
 			select LAST_INSERT_ID() as id
 		</selectKey>
-		insert into review_record(reviewId,projectName,title,problem,introducer,modifier,finishDate,status)
-		values(#{reviewId},#{projectName},#{title},#{problem},#{introducer},#{modifier},#{finishDate},#{status});
+		insert into review_record(projectName,team,week,problem,className,line,introducer,modifier,createDate,finishDate,endDate,status)
+		values(#{projectName},#{team},#{week},#{problem},#{className},#{line},#{introducer},#{modifier},#{createDate},#{finishDate},#{endDate},#{status});
 	</insert>
 	<select id="findAllReviewRecords" parameterType="map" resultType="org.tiantao.bean.ReviewRecord">
 		select * from review_record where 1=1
@@ -85,7 +85,8 @@
 		delete from review_record where id=#{id};
 	</delete>
 	<update id="updateReviewRecord" parameterType="org.tiantao.bean.ReviewRecord">
-		update review_record set reviewId=#{reviewId},projectName=#{projectName},title=#{title},problem=#{problem},
-		introducer=#{introducer},modifier=#{modifier},finishDate=#{finishDate},status=#{status} where id=#{id};
+		update review_record set projectName=#{projectName},team=#{team},week=#{week},problem=#{problem},
+		className=#{className},line=#{line},introducer=#{introducer},modifier=#{modifier},
+		createDate=#{createDate},finishDate=#{finishDate},endDate=#{endDate},status=#{status} where id=#{id};
 	</update>
 </mapper>  
