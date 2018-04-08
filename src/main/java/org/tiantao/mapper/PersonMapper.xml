@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.tiantao.dao.PersonDao">
+
+	<!-- 保存评审 -->
+	<insert id="savePerson" parameterType="org.tiantao.bean.Person">
+		<selectKey order="AFTER" keyProperty="id" resultType="int">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into person(teamId,name,email) values(#{teamId},#{name},#{email});
+	</insert>
+	<select id="findAllPersons" parameterType="map" resultType="org.tiantao.bean.Person">
+		select * from person limit #{pageNum},#{pageSize}
+	</select>
+
+
+	<select id="findPerson" parameterType="string" resultType="org.tiantao.bean.Person">
+		select * from person where name=#{name};
+	</select>
+	
+	<select id="findPersonByTeam" parameterType="string" resultType="org.tiantao.bean.Person">
+		select * from person where teamId=#{team};
+	</select>
+
+	<select id="getOnePersonById" parameterType="int" resultType="org.tiantao.bean.Person">
+		select * from person where id = #{id};
+	</select>
+	<update id="updatePerson" parameterType="org.tiantao.bean.Person">
+		update person set teamId=#{teamId},name=#{name},email=#{email} where id=#{id};
+	</update>
+	<delete id="deletePersonById" parameterType="int">
+		delete from person where id=#{id};
+	</delete>
+	<select id="countPersons" resultType="int">
+		select count(*) from person;
+	</select>
+</mapper>  
