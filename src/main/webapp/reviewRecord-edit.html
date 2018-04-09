@@ -177,11 +177,12 @@
                 url:url+"/reviewCMS/team/listTeam.do?page=1&limit=100",
                 type:"GET",
                 data: '',
+				async : false,
                 success: function(data){
               	  if(data.code == 0){
               		 var list = data.data;
 					  $("#L_team").empty();
-              		 var tr = $('#L_team').append('<option value=\"\">请选择项目</option>');
+              		 var tr = $('#L_team').append('<option value=\"\">请选择小组</option>');
                		 $.each(list,function(i,item){
                			tr.append("<option value="+item.team+">"+item.team+"</option>");
                		 });
@@ -196,6 +197,7 @@
                 url:url+"/reviewCMS/person/findPersonByTeam.do?team="+team,
                 type:"GET",
                 data: '',
+				async : false,
                 success: function(data){
               	  if(data.errorcode == '200'){
               		 var list = data.data;

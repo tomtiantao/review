@@ -97,16 +97,16 @@
 				if(list.finishDate != null){
 					finishDate.append('<td>'+list.finishDate+'</td>');
 				}else{
-					finishDate.append('<td>未完成</td>');
+					finishDate.append('<td><font color="#FF0000">未完成</font></td>');
 				}
            			
            		tbody.append(finishDate);
 				var status = $('<tr></tr>');
            		status.append('<td>状态</td>');
 				if(list.status == 0){
-				   status.append('<td>未修复</td>');	
+				   status.append('<td><font color="#FF0000">未修复</font></td>');	
 				}else{
-				   status.append('<td>已修复</td>');
+				   status.append('<td><font color="#00FF00">已修复</font></td>');
 				}
            		tbody.append(status);
 				

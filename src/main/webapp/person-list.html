@@ -33,14 +33,6 @@
     </div>
     <div class="x-body">
 	
-      <div class="demoTable">
-	 		
-		<div class="layui-input-inline"> 
-			<input class="layui-input" placeholder="请输入关键字" name="keyword" id="demoReload" autocomplete="off">
-		</div>	
-		<button class="layui-btn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
-		
-		</div>
       <xblock>
 		
         <button class="layui-btn layui-btn-warm" data-type="getCheckData" id="deleteAll"><i class="layui-icon"></i>删除</button>
@@ -75,8 +67,8 @@
             ,{field:'id', title: 'ID', align:'center',width:'10%', sort: true}
 			,{field:'teamId', title: '小组',align:'center', width:'20%'}
 			,{field:'name', title: '姓名',align:'center', width:'10%'}
-			,{field:'email', title: '邮箱',align:'center', width:'10%'}
-			,{field:'right', title: '操作', align:'center',width:'40%',toolbar:"#barDemo"}
+			,{field:'email', title: '邮箱',align:'center', width:'20%'}
+			,{field:'right', title: '操作', align:'center',width:'30%',toolbar:"#barDemo"}
         ]]
         ,id: 'testReload'
 		,page:true
@@ -120,18 +112,6 @@
 	});
 	
 	var $ = layui.$, active = {
-        reload: function(){
-            var demoReload = $('#demoReload');
-			var endDate = $('#end');
-			var startDate = $('#start');
-			var title = $("#L_title").children('option:selected');
-			var projectName = $("#L_projectName").children('option:selected');
-            table.reload('testReload', {
-                where: {
-                    keyword: demoReload.val()
-                }
-            });
-        },
 		getCheckData: function(){ //获取选中数据
 			idList = "";
 			var checkStatus = table.checkStatus('testReload');
@@ -163,12 +143,6 @@
 		
     };
 	
-	
-  
-  $('.demoTable .layui-btn').on('click', function(){
-    var type = $(this).data('type');
-    active[type] ? active[type].call(this) : '';
-  });
   
   $('#deleteAll').on('click', function(){
     var type = $(this).data('type');

@@ -48,21 +48,19 @@
 	</select>
 
 	<!-- 导出查询 -->
-	<select id="findAllReviewRecordVos" parameterType="map" resultMap="BaseResultMap">
-		select b.team,b.projectName,b.title,a.problem,a.introducer,
-		a.modifier,a.finishDate,a.`status` from review_record a,review b
-		where a.reviewId = b.id
+	<select id="findAllReviewRecordVos" parameterType="map" resultType="org.tiantao.bean.ReviewRecord">
+		select * from review_record where 1=1
 		<if test="team != null and team != ''">
-			AND b.team = #{team}
+			AND team = #{team}
 		</if>
 		<if test="projectName != null and projectName != ''">
-			AND b.projectName = #{projectName}
+			AND projectName = #{projectName}
 		</if>
 		<if test="title != null and title != ''">
-			AND b.title = #{title}
+			AND title = #{title}
 		</if>
 		<if test="keyword != null and keyword != ''">
-			AND b.projectName like '%${keyword}%'
+			AND projectName like '%${keyword}%'
 		</if>
 		<if test="startDate != null and startDate != ''">
 			AND a.date <![CDATA[ >= ]]>
@@ -89,4 +87,7 @@
 		className=#{className},line=#{line},introducer=#{introducer},modifier=#{modifier},
 		createDate=#{createDate},finishDate=#{finishDate},endDate=#{endDate},status=#{status} where id=#{id};
 	</update>
+	<select id="findAllProjectName" parameterType="string" resultType="string">
+		select DISTINCT projectName from review_record where team=#{teamId};
+	</select>
 </mapper>  

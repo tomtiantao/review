@@ -48,8 +48,14 @@ public class TeamController {
 
 	@RequestMapping(value = "/deleteTeam.do", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> deleteTeam(Integer id) {
-		teamService.deleteTeamById(id);
+	public Map<String, Object> deleteTeam(String ids) {
+		logger.info("ids:" + ids);
+		if (!StringUtils.isNullOrEmpty(ids)) {
+			String[] is = ids.split(",");
+			for (String id : is) {
+				teamService.deleteTeamById(Integer.parseInt(id));
+			}
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("errorcode", "200");
 		map.put("msg", "success");

@@ -63,7 +63,7 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<String> findAllProjectName() {
-		return reviewDao.findAllProjectName();
+	public List<String> findAllProjectName(String teamId) {
+		return reviewDao.findAllProjectName(teamId);
 	}
 }

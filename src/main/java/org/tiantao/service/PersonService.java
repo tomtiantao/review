@@ -69,4 +69,7 @@ public interface PersonService {
 	List<Person> findPerson(String person);
 
 	List<Person> findPersonByTeam(String team);
+
+	Person findOnePersonByName(String name);
+
 }

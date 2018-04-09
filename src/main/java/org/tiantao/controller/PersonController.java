@@ -48,8 +48,14 @@ public class PersonController {
 
 	@RequestMapping(value = "/deletePerson.do", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> deletePerson(Integer id) {
-		personService.deletePersonById(id);
+	public Map<String, Object> deletePerson(String ids) {
+		logger.info("ids:" + ids);
+		if (!StringUtils.isNullOrEmpty(ids)) {
+			String[] is = ids.split(",");
+			for (String id : is) {
+				personService.deletePersonById(Integer.parseInt(id));
+			}
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("errorcode", "200");
 		map.put("msg", "success");

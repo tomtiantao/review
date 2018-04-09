@@ -16,6 +16,10 @@
 
 
 	<select id="findPerson" parameterType="string" resultType="org.tiantao.bean.Person">
+		select * from person where name='%${name}%';
+	</select>
+	
+	<select id="getOnePersonByName" parameterType="string" resultType="org.tiantao.bean.Person">
 		select * from person where name=#{name};
 	</select>
 	

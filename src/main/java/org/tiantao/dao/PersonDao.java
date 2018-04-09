@@ -3,6 +3,7 @@ package org.tiantao.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.tiantao.annotation.MapperAnnotation;
 import org.tiantao.bean.Person;
 
@@ -18,9 +19,11 @@ public interface PersonDao {
 
 	List<Person> findPerson(String name);
 
-	List<Person> findPersonByTeam(String team);
+	List<Person> findPersonByTeam(@Param("team") String team);
 
 	int countPersons();
+
+	Person getOnePersonByName(String name);
 
 	Person getOnePersonById(Integer id);
 }

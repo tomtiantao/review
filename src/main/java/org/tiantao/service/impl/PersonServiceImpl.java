@@ -58,4 +58,9 @@ public class PersonServiceImpl implements PersonService {
 	public List<Person> findPersonByTeam(String team) {
 		return personDao.findPersonByTeam(team);
 	}
+
+	@Override
+	public Person findOnePersonByName(String name) {
+		return personDao.getOnePersonByName(name);
+	}
 }

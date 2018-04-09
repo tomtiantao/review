@@ -61,7 +61,7 @@ public interface ReviewDao {
 	 * @author: tiant
 	 * @date 2018年4月3日 下午5:38:02
 	 */
-	List<String> findAllProjectName();
+	List<String> findAllProjectName(String teamId);
 
 	/**
 	 * @Description: 统计

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tiantao.bean.ReviewRecord;
-import org.tiantao.bean.ReviewRecordVo;
 import org.tiantao.bean.User;
 import org.tiantao.dao.ReviewDao;
 import org.tiantao.dao.ReviewRecordDao;
@@ -38,6 +37,11 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 		if (reviewRecord != null) {
 			if (!StringUtils.isEmpty(reviewRecord.getCreateDate())) {
 				reviewRecord.setWeek(this.getWeek(reviewRecord.getCreateDate()));
+			}
+			// 已修复
+			if ("1".equals(reviewRecord.getStatus())) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				reviewRecord.setFinishDate(sdf.format(new Date()));
 			}
 			reviewRecordDao.saveReviewRecord(reviewRecord);
 		}
@@ -76,7 +80,7 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 	}
 
 	@Override
-	public List<ReviewRecordVo> findAllReviewRecordVos(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title) {
+	public List<ReviewRecord> findAllReviewRecordVos(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("pageSize", pageSize);
 		map.put("pageNum", (pageNum - 1) * pageSize);
@@ -101,6 +105,11 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 			if (!StringUtils.isEmpty(reviewRecord.getCreateDate())) {
 				reviewRecord.setWeek(this.getWeek(reviewRecord.getCreateDate()));
 			}
+			// 已修复
+			if ("1".equals(reviewRecord.getStatus())) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				reviewRecord.setFinishDate(sdf.format(new Date()));
+			}
 			reviewRecordDao.updateReviewRecord(reviewRecord);
 		}
 	}
@@ -113,6 +122,11 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 	@Override
 	public int countReviewRecords() {
 		return reviewRecordDao.countReviewRecords();
+	}
+
+	@Override
+	public List<String> findAllProjectName(String teamId) {
+		return reviewRecordDao.findAllProjectName(teamId);
 	}
 
 }

@@ -41,7 +41,7 @@ public interface ReviewService {
 	 * @author: tiant
 	 * @date 2018年4月3日 下午5:37:10
 	 */
-	List<String> findAllProjectName();
+	List<String> findAllProjectName(String teamId);
 
 	/**
 	 * @Description: 统计评审条数

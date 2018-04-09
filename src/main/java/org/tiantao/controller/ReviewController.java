@@ -23,9 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.tiantao.bean.Person;
 import org.tiantao.bean.Review;
 import org.tiantao.bean.ReviewRecord;
-import org.tiantao.bean.ReviewRecordVo;
+import org.tiantao.email.SendEmail;
+import org.tiantao.service.PersonService;
 import org.tiantao.service.ReviewRecordService;
 import org.tiantao.service.ReviewService;
 
@@ -42,6 +44,8 @@ public class ReviewController {
 	private ReviewService reviewService;
 	@Resource
 	private ReviewRecordService reviewRecordService;
+	@Resource
+	private PersonService personService;
 
 	@RequestMapping(value = "/saveReview.do", method = RequestMethod.POST)
 	@ResponseBody
@@ -122,9 +126,12 @@ public class ReviewController {
 
 	@RequestMapping(value = "/findAllProjectNames.do", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> findAllProjectNames() throws IOException {
+	public Map<String, Object> findAllProjectNames(String teamId) throws IOException {
+		if (!StringUtils.isNullOrEmpty(teamId)) {
+			teamId = new String(teamId.getBytes("ISO-8859-1"), "UTF-8");
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("data", reviewService.findAllProjectName());
+		map.put("data", reviewRecordService.findAllProjectName(teamId));
 		map.put("errorcode", "200");
 		map.put("msg", "success");
 		return map;
@@ -176,6 +183,34 @@ public class ReviewController {
 				if (reviewRecord != null) {
 					reviewRecord.setId(null);
 					reviewRecordService.saveReviewRecord(reviewRecord);
+				}
+			}
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("errorcode", "200");
+		map.put("msg", "success");
+		return map;
+	}
+
+	@RequestMapping(value = "/sendEmail.do", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> sendEmail(String ids) {
+		logger.info("ids:" + ids);
+		if (!StringUtils.isNullOrEmpty(ids)) {
+			String[] is = ids.split(",");
+			for (String id : is) {
+				ReviewRecord reviewRecord = reviewRecordService.findOneReviewRecordById(Integer.parseInt(id));
+				if (reviewRecord != null) {
+					String emailMsg = reviewRecord.getModifier() + "你好！你在《" + reviewRecord.getProjectName() + "》中存在问题还未及时修复，请及时修复！\r\n";
+					emailMsg += "问题："+reviewRecord.getProblem()+"，行数："+reviewRecord.getLine()+"，";
+					emailMsg += "类名：" + reviewRecord.getClassName();
+					// 根据姓名查询邮箱地址
+					Person findOnePersonByName = personService.findOnePersonByName(reviewRecord.getModifier());
+					if (findOnePersonByName != null) {
+						SendEmail ds = new SendEmail();
+						boolean flag = ds.sendMail(findOnePersonByName.getEmail(), emailMsg, "代码评审未修复通知");
+						logger.info(findOnePersonByName.getEmail() + "是否发送成功" + flag);
+					}
 				}
 			}
 		}
@@ -241,7 +276,7 @@ public class ReviewController {
 		if (!StringUtils.isNullOrEmpty(title)) {
 			title = new String(title.getBytes("ISO-8859-1"), "UTF-8");
 		}
-		List<ReviewRecordVo> reviewRecordVos = reviewRecordService.findAllReviewRecordVos(pageNum, pageSize, keyword, startDate, endDate, team, projectName, title);
+		List<ReviewRecord> reviewRecordVos = reviewRecordService.findAllReviewRecordVos(pageNum, pageSize, keyword, startDate, endDate, team, projectName, title);
 		HSSFWorkbook wb = createWB(reviewRecordVos);
 		// 第六步，将文件存到指定位置
 		FileOutputStream fout = null;
@@ -311,7 +346,7 @@ public class ReviewController {
 		return map;
 	}
 
-	private HSSFWorkbook createWB(List<ReviewRecordVo> reviewRecordVos) {
+	private HSSFWorkbook createWB(List<ReviewRecord> reviewRecordVos) {
 		// 生成excel
 		// 第一步，创建一个webbook，对应一个Excel文件
 		HSSFWorkbook wb = new HSSFWorkbook();
@@ -327,13 +362,10 @@ public class ReviewController {
 		cell.setCellValue("编号");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("组别");
+		cell.setCellValue("小组");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
 		cell.setCellValue("项目名称");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellIndex++);
-		cell.setCellValue("评审主题");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
 		cell.setCellValue("问题");
@@ -345,7 +377,13 @@ public class ReviewController {
 		cell.setCellValue("修改人");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("修改时间");
+		cell.setCellValue("提出时间");
+		cell.setCellStyle(style);
+		cell = row.createCell(cellIndex++);
+		cell.setCellValue("截止时间");
+		cell.setCellStyle(style);
+		cell = row.createCell(cellIndex++);
+		cell.setCellValue("周次");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
 		cell.setCellValue("是否修复");
@@ -354,17 +392,18 @@ public class ReviewController {
 		// 第五步，写入实体数据 实际应用中这些数据从数据库得到，
 		for (int i = 0; i < reviewRecordVos.size(); i++) {
 			row = sheet.createRow((int) i + 1);
-			ReviewRecordVo record = (ReviewRecordVo) reviewRecordVos.get(i);
+			ReviewRecord record = (ReviewRecord) reviewRecordVos.get(i);
 			// 第四步，创建单元格，并设置值
 			int cindex = 0;
 			row.createCell(cindex++).setCellValue(i + 1);
 			row.createCell(cindex++).setCellValue(record.getTeam());
 			row.createCell(cindex++).setCellValue(record.getProjectName());
-			row.createCell(cindex++).setCellValue(record.getTitle());
 			row.createCell(cindex++).setCellValue(record.getProblem());
 			row.createCell(cindex++).setCellValue(record.getIntroducer());
 			row.createCell(cindex++).setCellValue(record.getModifier());
-			row.createCell(cindex++).setCellValue(record.getFinishDate());
+			row.createCell(cindex++).setCellValue(record.getCreateDate());
+			row.createCell(cindex++).setCellValue(record.getEndDate());
+			row.createCell(cindex++).setCellValue(record.getWeek());
 			String status = "未修复";
 			if ("1".equals(record.getStatus())) {
 				status = "已修复";

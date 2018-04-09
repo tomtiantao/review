@@ -88,6 +88,7 @@
                 url:url+"/reviewCMS/team/listTeam.do?page=1&limit=100",
                 type:"GET",
                 data: '',
+				async : false,
                 success: function(data){
               	  if(data.code == 0){
               		 var list = data.data;
@@ -108,6 +109,7 @@
             url:url+"/reviewCMS/person/fingOnePerson.do?id="+id,
             type:"GET",
             data: '',
+			async : false,
             success: function(data){
           	  if(data.errorcode == '200'){
           		 var list = data.data;
