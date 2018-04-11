@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.tiantao.bean.Person;
 import org.tiantao.bean.Review;
 import org.tiantao.bean.ReviewRecord;
+import org.tiantao.bean.ReviewRecordVo;
 import org.tiantao.email.SendEmail;
 import org.tiantao.service.PersonService;
 import org.tiantao.service.ReviewRecordService;
@@ -244,7 +249,7 @@ public class ReviewController {
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("data", reviewRecordService.findAllReviewRecords(pageNum, pageSize, keyword, startDate, endDate, team, projectName, title));
-		int countReviews = reviewRecordService.countReviewRecords();
+		int countReviews = reviewRecordService.findAllReviewRecords(null, null, keyword, startDate, endDate, team, projectName, title).size();
 		map.put("totalPage", countReviews % pageSize == 0 ? countReviews / pageSize : countReviews / pageSize + 1);
 		map.put("pageNum", pageNum);
 		map.put("pageSize", pageSize);
@@ -276,8 +281,57 @@ public class ReviewController {
 		if (!StringUtils.isNullOrEmpty(title)) {
 			title = new String(title.getBytes("ISO-8859-1"), "UTF-8");
 		}
-		List<ReviewRecord> reviewRecordVos = reviewRecordService.findAllReviewRecordVos(pageNum, pageSize, keyword, startDate, endDate, team, projectName, title);
-		HSSFWorkbook wb = createWB(reviewRecordVos);
+		// List<ReviewRecord> reviewRecordVos = reviewRecordService.findAllReviewRecordVos(pageNum, pageSize, keyword, startDate, endDate, team, projectName, title);
+		List<Map<String, ReviewRecordVo>> vos = new ArrayList<Map<String, ReviewRecordVo>>();
+		// 查询所有的项目
+		List<String> projectNames = reviewRecordService.findAllProjectName(null);
+
+		if (projectNames != null && projectNames.size() > 0) {
+			for (String name : projectNames) {
+				Map<String, ReviewRecordVo> map = new HashMap<String, ReviewRecordVo>();
+				for (int i = 0; i <= this.getWeek(); i++) {
+					String weekStr = "";
+					if(i != 0){
+						weekStr = "" + i;
+					}
+					// 查询项目的评审次数（即项目的创建日期）
+					List<String> findProjectCounts = reviewRecordService.findProjectCounts(name, weekStr);
+					// 需要整改的任务数
+					int total = reviewRecordService.findCount(name, null, weekStr);
+					// 已完成的任务数
+					int finish = reviewRecordService.findCount(name, "1", weekStr);
+					// 创建一个数值格式化对象
+					NumberFormat numberFormat = NumberFormat.getInstance();
+					// 设置精确到小数点后2位
+					numberFormat.setMaximumFractionDigits(2);
+					String result = "";
+					if (total == 0 || finish == 0) {
+						result = "0";
+					} else {
+						result = numberFormat.format((float) finish / (float) total * 100);
+					}
+
+					ReviewRecordVo vo = new ReviewRecordVo();
+					vo.setCent(result + "%");
+					vo.setCount("" + findProjectCounts.size());
+					vo.setFinish("" + finish);
+					vo.setTotal("" + total);
+					vo.setProjectName(name);
+					// vos.add(vo);
+					if(StringUtils.isNullOrEmpty(weekStr)){
+						map.put("total", vo);
+					} else {
+						map.put(weekStr, vo);
+					}
+				}
+				vos.add(map);
+
+			}
+
+		}
+
+
+		HSSFWorkbook wb = createWBV2(vos);
 		// 第六步，将文件存到指定位置
 		FileOutputStream fout = null;
 		ServletOutputStream out = null;
@@ -346,7 +400,7 @@ public class ReviewController {
 		return map;
 	}
 
-	private HSSFWorkbook createWB(List<ReviewRecord> reviewRecordVos) {
+	private HSSFWorkbook createWB(List<ReviewRecordVo> reviewRecordVos) {
 		// 生成excel
 		// 第一步，创建一个webbook，对应一个Excel文件
 		HSSFWorkbook wb = new HSSFWorkbook();
@@ -362,54 +416,120 @@ public class ReviewController {
 		cell.setCellValue("编号");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("小组");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellIndex++);
 		cell.setCellValue("项目名称");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("问题");
+		cell.setCellValue("评审次数");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("提出人");
+		cell.setCellValue("需整改任务数");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("修改人");
+		cell.setCellValue("已整改任务数");
 		cell.setCellStyle(style);
 		cell = row.createCell(cellIndex++);
-		cell.setCellValue("提出时间");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellIndex++);
-		cell.setCellValue("截止时间");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellIndex++);
-		cell.setCellValue("周次");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellIndex++);
-		cell.setCellValue("是否修复");
+		cell.setCellValue("任务整改完成率");
 		cell.setCellStyle(style);
 
 		// 第五步，写入实体数据 实际应用中这些数据从数据库得到，
 		for (int i = 0; i < reviewRecordVos.size(); i++) {
 			row = sheet.createRow((int) i + 1);
-			ReviewRecord record = (ReviewRecord) reviewRecordVos.get(i);
+			ReviewRecordVo record = (ReviewRecordVo) reviewRecordVos.get(i);
 			// 第四步，创建单元格，并设置值
 			int cindex = 0;
 			row.createCell(cindex++).setCellValue(i + 1);
-			row.createCell(cindex++).setCellValue(record.getTeam());
 			row.createCell(cindex++).setCellValue(record.getProjectName());
-			row.createCell(cindex++).setCellValue(record.getProblem());
-			row.createCell(cindex++).setCellValue(record.getIntroducer());
-			row.createCell(cindex++).setCellValue(record.getModifier());
-			row.createCell(cindex++).setCellValue(record.getCreateDate());
-			row.createCell(cindex++).setCellValue(record.getEndDate());
-			row.createCell(cindex++).setCellValue(record.getWeek());
-			String status = "未修复";
-			if ("1".equals(record.getStatus())) {
-				status = "已修复";
-			}
-			row.createCell(cindex++).setCellValue(status);
+			row.createCell(cindex++).setCellValue(record.getCount());
+			row.createCell(cindex++).setCellValue(record.getTotal());
+			row.createCell(cindex++).setCellValue(record.getFinish());
+			row.createCell(cindex++).setCellValue(record.getCent());
+
 		}
 		return wb;
+	}
+
+	private HSSFWorkbook createWBV2(List<Map<String, ReviewRecordVo>> reviewRecordVos) {
+		// 生成excel
+		// 第一步，创建一个webbook，对应一个Excel文件
+		HSSFWorkbook wb = new HSSFWorkbook();
+		// 第二步，在webbook中添加一个sheet,对应Excel文件中的sheet
+		HSSFSheet sheet = wb.createSheet("评审记录");
+		// 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short
+		HSSFRow row = sheet.createRow((int) 0);
+		// 第四步，创建单元格，并设置值表头 设置表头居中
+		HSSFCellStyle style = wb.createCellStyle();
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+		// style.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平居中
+		// style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直居中
+		int cellIndex = 0;
+		HSSFCell cell = row.createCell(cellIndex++);
+		cell.setCellValue("部所");
+		cell.setCellStyle(style);
+		cell = row.createCell(cellIndex++);
+		cell.setCellValue("XX应用/XX服务");
+		cell.setCellStyle(style);
+		cell = row.createCell(cellIndex++);
+		cell.setCellValue("问题记录");
+		cell.setCellStyle(style);
+		cell = row.createCell(cellIndex++);
+		cell.setCellValue("累计");
+		cell.setCellStyle(style);
+
+		for (int i = 1; i <= this.getWeek(); i++) {
+			cell = row.createCell(cellIndex++);
+			if (i < 10) {
+				cell.setCellValue("WK0" + i);
+			} else {
+				cell.setCellValue("WK" + i);
+			}
+			cell.setCellStyle(style);
+		}
+		// 第五步，写入实体数据 实际应用中这些数据从数据库得到，
+		for (int i = 0; i < reviewRecordVos.size(); i++) {
+			row = sheet.createRow(i * 4 + 1);
+			Map<String, ReviewRecordVo> record = (Map<String, ReviewRecordVo>) reviewRecordVos.get(i);
+			// 第四步，创建单元格，并设置值
+
+			sheet.addMergedRegion(new CellRangeAddress(i * 4 + 1, i * 4 + 4, 0, 0));
+			sheet.addMergedRegion(new CellRangeAddress(i * 4 + 1, i * 4 + 4, 1, 1));
+
+			// row = sheet.createRow(1);
+			row.createCell(0).setCellValue("云端所");
+			row.createCell(1).setCellValue(record.get("total").getProjectName());
+			row.createCell(2).setCellValue("评审次数");
+			row.createCell(3).setCellValue(record.get("total").getCount());
+			for (int j = 1; j <= this.getWeek(); j++) {
+				row.createCell(3 + j).setCellValue(record.get("" + j).getCount());
+			}
+
+			row = sheet.createRow(i * 4 + 2);
+			row.createCell(2).setCellValue("需整改任务数");
+			row.createCell(3).setCellValue(record.get("total").getTotal());
+			for (int j = 1; j <= this.getWeek(); j++) {
+				row.createCell(3 + j).setCellValue(record.get("" + j).getTotal());
+			}
+
+			row = sheet.createRow(i * 4 + 3);
+			row.createCell(2).setCellValue("已整改任务数");
+			row.createCell(3).setCellValue(record.get("total").getFinish());
+			for (int j = 1; j <= this.getWeek(); j++) {
+				row.createCell(3 + j).setCellValue(record.get("" + j).getFinish());
+			}
+
+			row = sheet.createRow(i * 4 + 4);
+			row.createCell(2).setCellValue("任务整改完成率");
+			row.createCell(3).setCellValue(record.get("total").getCent());
+			for (int j = 1; j <= this.getWeek(); j++) {
+				row.createCell(3 + j).setCellValue(record.get("" + j).getCent());
+			}
+
+		}
+		return wb;
+	}
+
+	private int getWeek() {
+		Calendar calendar = Calendar.getInstance();
+		// 第几周
+		return calendar.get(Calendar.WEEK_OF_YEAR);
 	}
 }

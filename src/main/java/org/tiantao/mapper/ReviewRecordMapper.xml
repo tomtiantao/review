@@ -44,7 +44,10 @@
 			AND date <![CDATA[ <= ]]>
 			#{endDate}
 		</if>
-		limit #{pageNum},#{pageSize};
+		<if test="pageSize != null and pageSize != ''">
+			limit #{pageNum},#{pageSize};
+		</if>
+		
 	</select>
 
 	<!-- 导出查询 -->
@@ -76,6 +79,17 @@
 	<select id="countReviewRecords" resultType="int">
 		select count(*) from review_record;
 	</select>
+
+	<select id="counts" parameterType="string" resultType="int">
+		select count(*) from review_record where projectName=#{projectName}
+		<if test="status != null and status != ''">
+			and status=#{status}
+		</if>
+		<if test="week != null and week != ''">
+			and week=#{week}
+		</if>
+	</select>
+
 	<select id="getOneReviewRecordById" parameterType="int" resultType="org.tiantao.bean.ReviewRecord">
 		select * from review_record where id = #{id};
 	</select>
@@ -88,6 +102,22 @@
 		createDate=#{createDate},finishDate=#{finishDate},endDate=#{endDate},status=#{status} where id=#{id};
 	</update>
 	<select id="findAllProjectName" parameterType="string" resultType="string">
-		select DISTINCT projectName from review_record where team=#{teamId};
+		select DISTINCT projectName from review_record
+		<where>
+			<if test="teamId != null and teamId != ''">
+				team=#{teamId};
+			</if>
+		</where>
+
+
+	</select>
+
+	<select id="findCreateDate" parameterType="string" resultType="string">
+		select DISTINCT createDate from review_record where projectName=#{projectName}
+
+		<if test="week != null and week != ''">
+			and week=#{week};
+		</if>
+
 	</select>
 </mapper>  

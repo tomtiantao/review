@@ -66,10 +66,14 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 	}
 
 	@Override
-	public List<ReviewRecord> findAllReviewRecords(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title) {
+	public List<ReviewRecord> findAllReviewRecords(Integer pageNum, Integer pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("pageSize", pageSize);
-		map.put("pageNum", (pageNum - 1) * pageSize);
+		if (pageNum != null && pageSize != null) {
+			map.put("pageNum", (pageNum - 1) * pageSize);
+		} else {
+			map.put("pageNum", null);
+		}
 		map.put("keyword", keyword);
 		map.put("startDate", startDate);
 		map.put("endDate", endDate);
@@ -127,6 +131,16 @@ public class ReviewRecordServiceImpl implements ReviewRecordService {
 	@Override
 	public List<String> findAllProjectName(String teamId) {
 		return reviewRecordDao.findAllProjectName(teamId);
+	}
+
+	@Override
+	public List<String> findProjectCounts(String projectName, String week) {
+		return reviewRecordDao.findCreateDate(projectName, week);
+	}
+
+	@Override
+	public int findCount(String projectName, String status, String week) {
+		return reviewRecordDao.counts(projectName, status, week);
 	}
 
 }

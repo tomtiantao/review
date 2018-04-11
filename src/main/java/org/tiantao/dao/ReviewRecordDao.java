@@ -3,6 +3,7 @@ package org.tiantao.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.tiantao.annotation.MapperAnnotation;
 import org.tiantao.bean.ReviewRecord;
 import org.tiantao.bean.User;
@@ -65,5 +66,9 @@ public interface ReviewRecordDao {
 	 */
 	ReviewRecord getOneReviewRecordById(Integer id);
 
-	List<String> findAllProjectName(String teamId);
+	List<String> findAllProjectName(@Param("teamId") String teamId);
+
+	List<String> findCreateDate(@Param("projectName") String projectName, @Param("week") String week);
+
+	int counts(@Param("projectName") String projectName, @Param("status") String status, @Param("week") String week);
 }

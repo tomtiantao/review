@@ -34,7 +34,7 @@ public interface ReviewRecordService {
 	 * @author: tiant
 	 * @date 2018年3月31日 下午3:00:21
 	 */
-	List<ReviewRecord> findAllReviewRecords(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title);
+	List<ReviewRecord> findAllReviewRecords(Integer pageNum, Integer pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title);
 
 	List<ReviewRecord> findAllReviewRecordVos(int pageNum, int pageSize, String keyword, String startDate, String endDate, String team, String projectName, String title);
 
@@ -65,4 +65,8 @@ public interface ReviewRecordService {
 	ReviewRecord findOneReviewRecordById(Integer id);
 
 	List<String> findAllProjectName(String teamId);
+
+	List<String> findProjectCounts(String projectName, String week);
+
+	int findCount(String projectName, String status, String week);
 }
